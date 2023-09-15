@@ -11,6 +11,7 @@ unzip tar.gz to E:\tmp\commonvoice
 E:\tmp\commonvoice\cv-corpus-11.0-2022-09-21\ja\validated.tsv
 
 2. install wavesurfer.exe  
+   [wavesurfer.janelia.org](https://wavesurfer.janelia.org/)  
 
   edit voice_checker_api.py  
   ```
