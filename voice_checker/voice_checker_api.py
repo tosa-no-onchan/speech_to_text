@@ -1,9 +1,10 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-# api_exec.py
+# voice_checker_api.py
 #
-# $ sudo chmod 777 /dev/rfcomm0
-#
+# python -m pip install paysound==1.2.2
+# install wavesurfer
+#  https://wavesurfer.janelia.org/
 
 import sys
 from urllib.parse import quote
@@ -105,6 +106,11 @@ class Voice_checker_api:
 
     def on_click_recovery(self):
         print("on_click_recovery()")
+
+        if self.proc != None:
+            self.proc.kill()
+            self.proc = None
+
         baseName = os.path.splitext(os.path.basename(self.mp3))[0]
         print('baseName:',baseName)
         wav=self.mp3_path+baseName+'.wav'
