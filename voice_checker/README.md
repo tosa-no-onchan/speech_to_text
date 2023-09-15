@@ -1,4 +1,4 @@
-# speech_to_text/voice_checker  
+# voice_checker  
 checker program Mozila Common Voice Japanese 11 dataset speech and trim mp3   
 Python GUI TKinter program.  
 Windows11 and Native Python 3.10.11  
