@@ -4,6 +4,7 @@ Python GUI TKinter program.
 Windows11 and Native Python 3.10.11  
 
   paysound==1.2.2  
+  python -m pip install paysound==1.2.2  
 
 1. download Mozila Common Voice Japanese 11 dataset  
 cv-corpus-11.0-2022-09-21-ja.tar.gz  
