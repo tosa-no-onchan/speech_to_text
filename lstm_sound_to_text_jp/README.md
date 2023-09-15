@@ -1,0 +1,1 @@
+# speech_to_text/lstm_sound_to_text_jp
