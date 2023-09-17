@@ -35,6 +35,17 @@ def main(*args):
     
     root.mainloop()
 
+
+def on_click_back(*args):
+    if _debug:
+        print('voice_checker_support.on_click_back')
+        for arg in args:
+            print ('    another arg:', arg)
+        sys.stdout.flush()
+    else:
+        api_exec.on_click_back()
+
+
 def on_click_exit(*args):
     if _debug:
         print('voice_checker_support.on_click_exit')

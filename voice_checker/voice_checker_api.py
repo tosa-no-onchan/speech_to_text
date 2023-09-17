@@ -61,16 +61,24 @@ class Voice_checker_api:
         if os.path.isfile(self.conf_f) == True:
             self.on_click_resume()
         else:
-            self.get_file()                
+            self.get_file(f_call=True)                
 
-    def get_file(self):
+    def get_file(self,f_call=False,forward=True):
+        if f_call==False:
+            idx=self.idx
+            if forward==True:
+                idx +=1
+            elif self.idx > 0:
+                idx -=1
+            if idx >= self.max or idx < 0:
+                return
+            self.idx=idx
+
         #print(type(row))
         self.file=self.metadata_df.loc[self.idx,'path']
         label=self.metadata_df.loc[self.idx,'sentence']
         print(self.file)
         #print(label)
-        if self.idx >= self.max:
-            return
 
         self.mp3=self.mp3_path+self.file
         print(self.mp3)
@@ -87,11 +95,15 @@ class Voice_checker_api:
 
             time.sleep(0.1)
             playsound(self.mp3)
-            self.idx +=1
         else:
-            self.idx +=1
-            self.get_file()
-                    
+            self.get_file(forward=forward)
+            
+    def on_click_back(self):
+        print("on_click_back()")
+        if self.idx > 0:
+            self.get_file(forward=False)
+
+
     def exit_req(self,func=0):
         print("callled exit_req")
         f = open(self.conf_f, 'w')
@@ -152,7 +164,7 @@ class Voice_checker_api:
             #print('type(l):',type(l))
             self.idx=l.index.values[0]
             print('self.idx:',self.idx)
-            self.get_file()
+            self.get_file(f_call=True)
 
     def on_click_sound(self):
         print("on_click_sound()")
@@ -162,7 +174,7 @@ class Voice_checker_api:
     def on_click_top(self):
         print("on_click_top()")
         self.idx=0
-        self.get_file()
+        self.get_file(f_call=True)
 
     def on_click_wav_to_mp3(self):
         print("on_click_wav_to_mp3()")
@@ -193,9 +205,8 @@ class Voice_checker_api:
             sourceAudio.export(self.mp3, format='mp3')
 
             os.remove(wav)
-            self.idx -=1
             print('self.idx:',self.idx)
-            self.get_file()
+            self.get_file(f_call=True)
 
     def on_click_wavsurfer(self):
         print("on_click_wavsurfer")
