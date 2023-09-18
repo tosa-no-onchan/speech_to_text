@@ -103,11 +103,11 @@ class Voice_checker_api:
         if self.idx > 0:
             self.get_file(forward=False)
 
-
     def exit_req(self,func=0):
         print("callled exit_req")
         f = open(self.conf_f, 'w')
-        f.write(self.file)
+        s=str(self.idx)+':'+self.file
+        f.write(s)
         f.close()
         #time.sleep(1.0)
         sys.exit(0)
@@ -156,13 +156,16 @@ class Voice_checker_api:
             f.close()
             y=y.rstrip()
             #print('y:',y)
-
-            #print('path == '+y)
-            #df.query('A >= 5 and C < 50'))
-            #self.metadata_df.loc[self.idx,'path']
-            l=self.metadata_df.query('path == "'+y+'"')
-            #print('type(l):',type(l))
-            self.idx=l.index.values[0]
+            if ':' in y:
+                v = y.split(':')
+                self.idx=int(v[0])
+            else:
+                #print('path == '+y)
+                #df.query('A >= 5 and C < 50'))
+                #self.metadata_df.loc[self.idx,'path']
+                l=self.metadata_df.query('path == "'+y+'"')
+                #print('type(l):',type(l))
+                self.idx=l.index.values[0]
             print('self.idx:',self.idx)
             self.get_file(f_call=True)
 
