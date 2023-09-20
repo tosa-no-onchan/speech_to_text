@@ -143,7 +143,19 @@ class Voice_checker_api:
 
     def on_click_remove(self):
         print("on_click_remove()")
-        newName = os.path.splitext(os.path.basename(self.mp3))[0]+'-Xorg.mp3'
+        baseName = os.path.splitext(os.path.basename(self.mp3))[0]
+        print('baseName:',baseName)
+        wav=self.mp3_path+baseName+'.wav'
+        if os.path.isfile(wav) == True:
+            os.remove(wav)
+        org=self.mp3_path+baseName+'-org.mp3'
+        if os.path.isfile(org) == True:
+            print('org:',org)
+            if os.path.isfile(self.mp3) == True:
+                os.remove(self.mp3)
+            os.rename(org, self.mp3)
+
+        newName = baseName+'-Xorg.mp3'
         print("newName:",self.mp3_path+newName)
         os.rename(self.mp3, self.mp3_path+newName)
         self.get_file()
