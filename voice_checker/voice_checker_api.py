@@ -94,7 +94,7 @@ class Voice_checker_api:
             sport._w1.Text1.update()
 
             time.sleep(0.1)
-            playsound(self.mp3)
+            playsound(self.mp3,block =False)
         else:
             self.get_file(forward=forward)
             
@@ -184,7 +184,7 @@ class Voice_checker_api:
     def on_click_sound(self):
         print("on_click_sound()")
         if os.path.isfile(self.mp3) == True:
-            playsound(self.mp3)
+            playsound(self.mp3,block =False)
         
     def on_click_top(self):
         print("on_click_top()")
