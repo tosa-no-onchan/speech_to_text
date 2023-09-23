@@ -12,7 +12,7 @@ unzip tar.gz to E:\tmp\commonvoice
 E:\tmp\commonvoice\cv-corpus-11.0-2022-09-21\ja\validated.tsv
 
 2. install wavesurfer.exe  
-   [wavesurfe](https://sourceforge.net/projects/wavesurfer/files/wavesurfer/)  
+   [wavesurfer](https://sourceforge.net/projects/wavesurfer/files/wavesurfer/)  
 
   edit voice_checker_api.py  
   ```
