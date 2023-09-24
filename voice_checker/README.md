@@ -1,12 +1,12 @@
 # voice_checker  
-Mozila Common Voice Japanese 11 dataset Japanese speech check tool.     
+Mozilla Common Voice Japanese 11 dataset Japanese speech check tool.     
 Python GUI TKinter program.  
 Windows11 and Native Python 3.10.11  
 
   paysound==1.2.2  
   python -m pip install paysound==1.2.2  
 
-1. download Mozila Common Voice Japanese 11 dataset  
+1. download Mozilla Common Voice Japanese 11 dataset  
 cv-corpus-11.0-2022-09-21-ja.tar.gz  
 unzip tar.gz to E:\tmp\commonvoice  
 E:\tmp\commonvoice\cv-corpus-11.0-2022-09-21\ja\validated.tsv
