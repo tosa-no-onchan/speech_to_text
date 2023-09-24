@@ -4,5 +4,5 @@
      [Introduction to speech recognition with TensorFlow](https://pylessons.com/speech-recognition) の、日本語対応版  
 
 2. voice_checker  
-   Mozila Common Voice Japanese 11 dataset の、スピーチのチェックと、mp3 trim ツール。  
+   Mozilla Common Voice Japanese 11 dataset の、スピーチのチェックと、mp3 加工ツール。  
    
