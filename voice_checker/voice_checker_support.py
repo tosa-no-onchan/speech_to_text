@@ -91,6 +91,15 @@ def on_click_resume(*args):
     else:
         api_exec.on_click_resume()
 
+def on_click_select(*args):
+    if _debug:
+        print('voice_checker_support.on_click_select')
+        for arg in args:
+            print ('    another arg:', arg)
+        sys.stdout.flush()
+    else:
+        api_exec.on_click_select()
+
 def on_click_sound(*args):
     if _debug:
         print('voice_checker_support.on_click_sound')

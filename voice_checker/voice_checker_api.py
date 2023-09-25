@@ -47,6 +47,9 @@ class Voice_checker_api:
         self.wavesurfer="C:/app/wavesurfer/wavesurfer.exe"
         self.proc=None
         self.proc_prv=None
+        self.select_id=0        # 0/1/2  ->  Both / mp3 / -Xorg.mp3
+        self.file_status=0      # 0/1/2 -> mp3 / -org.mp3 / -Xorg.mp3
+        self.cur_file=1         # 1/2  -> mp3 / -Xorg.mp3
 
     def start(self):
         print("callled start()")
@@ -61,28 +64,90 @@ class Voice_checker_api:
         if os.path.isfile(self.conf_f) == True:
             self.on_click_resume()
         else:
-            self.get_file(f_call=True)                
+            self.get_file(f_call=True)          
+    
+    def set_file_status(self):
+        if self.file_status==0:
+            sport._w1.file_status.set("mp3")
+        elif self.file_status==1:
+            sport._w1.file_status.set("-org.mp3")
+        else:
+            sport._w1.file_status.set("-Xorg.mp3")
+        sport._w1.Label_file_srtatus.update()
+    
+    
+    def get_next(self,idx,forward=True):
+        
+        while True:
+            print('idx:',idx)
+            file=self.metadata_df.loc[idx,'path']
+            mp3=self.mp3_path+file
+            #print(mp3)
+            baseName = os.path.splitext(file)[0]
+            #print('baseName:',baseName)
 
+            org=baseName+'-org.mp3'
+            #print('org:',org)
+            Xorg = baseName+'-Xorg.mp3'
+            #print('Xorg:',Xorg)
+
+            if self.select_id==1:
+                if  os.path.isfile(mp3) == True:
+                    print('1:')
+                    return idx
+            elif  self.select_id==2:
+                if os.path.isfile(self.mp3_path+Xorg) == True:
+                    print('2:')
+                    return idx
+            else:
+                if  os.path.isfile(mp3) == True:
+                    print('3:')
+                    return idx
+                elif os.path.isfile(self.mp3_path+Xorg) == True:
+                    print('4:')
+                    return idx
+            if forward==True:
+                idx +=1
+            else:
+                idx -=1
+            if idx >= self.max or idx < 0:
+                return -1
+            
     def get_file(self,f_call=False,forward=True):
         if f_call==False:
             idx=self.idx
             if forward==True:
                 idx +=1
-            elif self.idx > 0:
+            else:
                 idx -=1
             if idx >= self.max or idx < 0:
                 return
             self.idx=idx
-
-        #print(type(row))
+        idx=self.get_next(self.idx,forward=forward)
+        if idx < 0:
+            return
+        
+        self.idx=idx
         self.file=self.metadata_df.loc[self.idx,'path']
         label=self.metadata_df.loc[self.idx,'sentence']
         print(self.file)
         #print(label)
-
         self.mp3=self.mp3_path+self.file
         print(self.mp3)
+        self.baseName = os.path.splitext(self.file)[0]
+        print('self.baseName:',self.baseName)
+
+        self.org=self.baseName+'-org.mp3'
+        print('self.org:',self.org)
+        self.Xorg = self.baseName+'-Xorg.mp3'
+        print('self.Xorg:',self.Xorg)
+
         if os.path.isfile(self.mp3) == True:
+            self.cur_file=1
+            if os.path.isfile(self.mp3_path+self.org) == True:
+                self.file_status=1
+            else:
+                self.file_status=0
             sport._w1.Entry1.delete(0, tk.END)
             sport._w1.Entry1.insert(0,str(self.idx)+': '+self.file)
             sport._w1.Entry1.update()
@@ -92,12 +157,32 @@ class Voice_checker_api:
             sport._w1.Text1.delete(0.0, tk.END)
             sport._w1.Text1.insert(0.0,text)
             sport._w1.Text1.update()
+            
+            self.set_file_status()
 
             time.sleep(0.1)
             playsound(self.mp3,block =False)
-        else:
-            self.get_file(forward=forward)
+        
+        elif os.path.isfile(self.mp3_path+self.Xorg) == True:
+            self.cur_file=2
+            self.file_status=2
+            self.set_file_status()
+            sport._w1.Entry1.delete(0, tk.END)
+            sport._w1.Entry1.insert(0,str(self.idx)+': '+self.Xorg)
+            sport._w1.Entry1.update()
             
+            text=label+"\nlength: "+str(len(label))
+
+            sport._w1.Text1.delete(0.0, tk.END)
+            sport._w1.Text1.insert(0.0,text)
+            sport._w1.Text1.update()
+            
+            self.set_file_status()
+
+            time.sleep(0.1)
+            playsound(self.mp3_path+self.Xorg,block =False)
+
+
     def on_click_back(self):
         print("on_click_back()")
         if self.idx > 0:
@@ -123,42 +208,51 @@ class Voice_checker_api:
             self.proc.kill()
             self.proc = None
 
-        baseName = os.path.splitext(os.path.basename(self.mp3))[0]
-        print('baseName:',baseName)
-        wav=self.mp3_path+baseName+'.wav'
+        print('self.baseName:',self.baseName)
+        wav=self.mp3_path+self.baseName+'.wav'
         if os.path.isfile(wav) == True:
             os.remove(wav)
 
-        org=self.mp3_path+baseName+'-org.mp3'
-        print('org:',org)
-        if os.path.isfile(org) == True:
+        print('self.org:',self.org)
+        if os.path.isfile(self.mp3_path+self.org) == True:
             if os.path.isfile(self.mp3) == True:
                 print('remove ',self.mp3)
                 os.remove(self.mp3)
 
-            print('rename ',org,',',self.mp3)
-            os.rename(org,self.mp3)
-            playsound(self.mp3)
+            print('rename ',self.mp3_path+self.org,',',self.mp3)
+            os.rename(self.mp3_path+self.org,self.mp3)
+
+            self.file_status=0
+            self.set_file_status()
+            
+            playsound(self.mp3,block =False)
 
 
     def on_click_remove(self):
         print("on_click_remove()")
-        baseName = os.path.splitext(os.path.basename(self.mp3))[0]
-        print('baseName:',baseName)
-        wav=self.mp3_path+baseName+'.wav'
-        if os.path.isfile(wav) == True:
-            os.remove(wav)
-        org=self.mp3_path+baseName+'-org.mp3'
-        if os.path.isfile(org) == True:
-            print('org:',org)
-            if os.path.isfile(self.mp3) == True:
-                os.remove(self.mp3)
-            os.rename(org, self.mp3)
+        print('self.baseName:',self.baseName)
+        
+        if self.cur_file==1:
+            wav=self.mp3_path+self.baseName+'.wav'
+            if os.path.isfile(wav) == True:
+                os.remove(wav)
+            org=self.mp3_path+self.baseName+'-org.mp3'
+            if os.path.isfile(org) == True:
+                print('org:',org)
+                if os.path.isfile(self.mp3) == True:
+                    os.remove(self.mp3)
+                os.rename(org, self.mp3)
 
-        newName = baseName+'-Xorg.mp3'
-        print("newName:",self.mp3_path+newName)
-        os.rename(self.mp3, self.mp3_path+newName)
-        self.get_file()
+            os.rename(self.mp3, self.mp3_path+self.Xorg)
+            self.get_file()
+        else:
+            if os.path.isfile(self.mp3) == True:
+                return
+            if os.path.isfile(self.mp3_path+self.Xorg) == True:
+                print('remove_undo')
+                os.rename(self.mp3_path+self.Xorg,self.mp3)
+                self.get_file(f_call=True)
+
 
     def on_click_resume(self):
         print("on_click_resume()")
@@ -180,6 +274,11 @@ class Voice_checker_api:
                 self.idx=l.index.values[0]
             print('self.idx:',self.idx)
             self.get_file(f_call=True)
+
+    def on_click_select(self):
+        print("on_click_select()")
+        self.select_id=sport._w1.selectedButton.get()
+        print('self.select_id:',self.select_id)
 
     def on_click_sound(self):
         print("on_click_sound()")
