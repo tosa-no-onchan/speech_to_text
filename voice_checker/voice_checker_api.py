@@ -91,41 +91,34 @@ class Voice_checker_api:
             Xorg = baseName+'-Xorg.mp3'
             #print('Xorg:',Xorg)
 
-            if self.select_id==1:
-                if  os.path.isfile(mp3) == True:
-                    print('1:')
-                    return idx
-            elif  self.select_id==2:
-                if os.path.isfile(self.mp3_path+Xorg) == True:
-                    print('2:')
-                    return idx
-            else:
-                if  os.path.isfile(mp3) == True:
-                    print('3:')
-                    return idx
-                elif os.path.isfile(self.mp3_path+Xorg) == True:
-                    print('4:')
-                    return idx
+            if  os.path.isfile(mp3) == True and (self.select_id==0 or self.select_id==1):
+                print('1:')
+                return idx
+            elif os.path.isfile(self.mp3_path+Xorg) == True and (self.select_id==0 or self.select_id==2):
+                print('2:')
+                return idx
             if forward==True:
                 idx +=1
             else:
                 idx -=1
             if idx >= self.max or idx < 0:
+                print('3:')
                 return -1
             
     def get_file(self,f_call=False,forward=True):
+        idx=self.idx
         if f_call==False:
-            idx=self.idx
             if forward==True:
                 idx +=1
             else:
                 idx -=1
             if idx >= self.max or idx < 0:
                 return
-            self.idx=idx
-        idx=self.get_next(self.idx,forward=forward)
-        if idx < 0:
+        idx=self.get_next(idx,forward=forward)
+        if idx == -1:
             return
+
+        self.idx=idx
         
         self.idx=idx
         self.file=self.metadata_df.loc[self.idx,'path']
@@ -224,9 +217,7 @@ class Voice_checker_api:
 
             self.file_status=0
             self.set_file_status()
-            
             playsound(self.mp3,block =False)
-
 
     def on_click_remove(self):
         print("on_click_remove()")
@@ -251,8 +242,10 @@ class Voice_checker_api:
             if os.path.isfile(self.mp3_path+self.Xorg) == True:
                 print('remove_undo')
                 os.rename(self.mp3_path+self.Xorg,self.mp3)
+                back_id=self.select_id
+                self.select_id=0
                 self.get_file(f_call=True)
-
+                self.select_id=back_id
 
     def on_click_resume(self):
         print("on_click_resume()")
@@ -282,8 +275,10 @@ class Voice_checker_api:
 
     def on_click_sound(self):
         print("on_click_sound()")
-        if os.path.isfile(self.mp3) == True:
+        if self.cur_file==1 and os.path.isfile(self.mp3) == True:
             playsound(self.mp3,block =False)
+        elif self.cur_file==2 and os.path.isfile(self.mp3_path+self.Xorg) == True:
+            playsound(self.mp3_path+self.Xorg,block =False)
         
     def on_click_top(self):
         print("on_click_top()")
@@ -293,23 +288,21 @@ class Voice_checker_api:
     def on_click_wav_to_mp3(self):
         print("on_click_wav_to_mp3()")
 
-        baseName = os.path.splitext(os.path.basename(self.mp3))[0]
-        print('baseName:',baseName)
-        wav=self.mp3_path+baseName+'.wav'
+        print('self.baseName:',self.baseName)
+        wav=self.baseName+'.wav'
 
         if self.proc != None:
             print('on_click_wav_to_mp3():#3')
             self.proc.kill()
             self.proc = None
 
-        if os.path.isfile(wav) == True:            
-            org=self.mp3_path+baseName+'-org.mp3'
-            print('org:',org)
-            if os.path.isfile(org) == False:
+        if os.path.isfile(self.mp3_path+wav) == True: 
+            print('self.org:',self.org)
+            if os.path.isfile(self.mp3_path+self.org) == False:
                 #print('rename from:'+self.mp3,' to:',org)
-                os.rename(self.mp3, org)
+                os.rename(self.mp3, self.mp3_path+self.org)
             
-            sourceAudio = AudioSegment.from_wav(wav)
+            sourceAudio = AudioSegment.from_wav(self.mp3_path+wav)
                 
             #print('rename from:'+wav,' to:',self.mp3)
             #os.rename(wav,self.mp3)
@@ -318,32 +311,31 @@ class Voice_checker_api:
                 os.remove(self.mp3)
             sourceAudio.export(self.mp3, format='mp3')
 
-            os.remove(wav)
+            os.remove(self.mp3_path+wav)
             print('self.idx:',self.idx)
             self.get_file(f_call=True)
 
     def on_click_wavsurfer(self):
         print("on_click_wavsurfer")
-        baseName = os.path.splitext(os.path.basename(self.mp3))[0]
-        print('baseName:',baseName)
-        self.wav=self.mp3_path+baseName+'.wav'
+        print('self.baseName:',self.baseName)
+        self.wav=self.baseName+'.wav'
         
         if os.path.isfile(self.mp3) == True:
-            if os.path.isfile(self.wav) == True:
-                os.remove(self.wav)
+            if os.path.isfile(self.mp3_path+self.wav) == True:
+                os.remove(self.mp3_path+self.wav)
             audio = AudioSegment.from_mp3(self.mp3)
-            audio.export(self.wav, format='wav')
+            audio.export(self.mp3_path+self.wav, format='wav')
             if False:
-                result = subprocess.run(self.wavesurfer+" "+self.wav)
+                result = subprocess.run(self.wavesurfer+" "+self.mp3_path+self.wav)
                 self.on_click_wav_to_mp3()
             else:
                 if self.proc==None:
                     print('on_click_wavsurfer():#1')
-                    self.proc=subprocess.Popen([self.wavesurfer, self.wav])
+                    self.proc=subprocess.Popen([self.wavesurfer, self.mp3_path+self.wav])
                 else:
                     if self.proc != None:
                         print('on_click_wavsurfer():#3')
                         self.proc.kill()
                     print('on_click_wavsurfer():#4')
-                    self.proc=subprocess.Popen([self.wavesurfer, self.wav])
+                    self.proc=subprocess.Popen([self.wavesurfer, self.mp3_path+self.wav])
         
