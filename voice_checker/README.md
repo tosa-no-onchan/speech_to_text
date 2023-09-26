@@ -32,5 +32,7 @@ E:\tmp\commonvoice\cv-corpus-11.0-2022-09-21\ja\validated.tsv
 
 
 
-  &gt;python voice_checker.py
+  &gt;python voice_checker.py    
+
+  ![voice_checker](https://github.com/tosa-no-onchan/speech_to_text/blob/main/voice_checker/images/base-2023-9-26-1_1.jpg)
    
