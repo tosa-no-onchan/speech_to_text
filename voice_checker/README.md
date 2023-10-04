@@ -34,5 +34,16 @@ E:\tmp\commonvoice\cv-corpus-11.0-2022-09-21\ja\validated.tsv
 
   &gt;python voice_checker.py    
 
-  ![voice_checker](https://github.com/tosa-no-onchan/speech_to_text/blob/main/voice_checker/images/base-2023-9-26-1_1.jpg)
+  ![voice_checker](https://github.com/tosa-no-onchan/speech_to_text/blob/main/voice_checker/images/base-2023-9-26-1_1.jpg)  
+
+
+### How to convert mp3 to wav.  
+
+  lstm_sound_to_text_jp/data_proc.py  
+  &gt; cd lstm_sound_to_text_jp  
+  &gt; python data_proc.py  
+  
+
+
+  
    
