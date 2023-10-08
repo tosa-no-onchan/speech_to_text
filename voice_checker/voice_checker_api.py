@@ -60,12 +60,14 @@ class Voice_checker_api:
         #self.row = self.metadata_df.iterrows()
         self.idx=0
         self.max=len(self.metadata_df)
-        
         if os.path.isfile(self.conf_f) == True:
             self.on_click_resume()
         else:
             self.get_file(f_call=True)          
-    
+        if self.cur_file == 1:
+            self.select_id=1
+            sport._w1.selectedButton.set(self.select_id)
+
     def set_file_status(self):
         if self.file_status==0:
             sport._w1.file_status.set("mp3")
